@@ -1,0 +1,21 @@
+{
+  "name": "orkio-v5",
+  "version": "5.0.0",
+  "private": true,
+  "description": "Orkio v5 - Multi-tenant AI Agent Platform",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "start": "pnpm --filter web start",
+    "lint": "pnpm --filter web lint",
+    "backend:dev": "cd app && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+    "backend:migrate": "cd app && alembic upgrade head"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
