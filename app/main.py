@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from typing import Optional
+import uuid
 from app.core.config import settings
 from app.core.database import Base, engine, SessionLocal
 from app.models.models import User
@@ -13,6 +16,32 @@ from app.api.v4.user import user_v4_router
 from app.api.v4.webhooks import router as webhooks_router
 
 app = FastAPI(title="ORKIO API", version="1.0.0")
+
+# Schemas para Chat v5
+class ChatRequest(BaseModel):
+    org_slug: str
+    message: str
+    conversation_id: Optional[str] = None
+
+class ChatResponse(BaseModel):
+    conversation_id: str
+    reply: str
+
+@app.post("/api/v1/chat", response_model=ChatResponse)
+async def chat_v5_endpoint(payload: ChatRequest):
+    """
+    Endpoint de chat básico para o frontend Orkio v5.
+    Por enquanto, apenas ecoa a mensagem com um prefixo Enterprise.
+    Versão simplificada para integração inicial (sem streaming).
+    """
+    conversation_id = payload.conversation_id or str(uuid.uuid4())
+
+    reply_text = f"[Orkio v5] Recebido de {payload.org_slug}: {payload.message}"
+
+    return ChatResponse(
+        conversation_id=conversation_id,
+        reply=reply_text,
+    )
 
 # CORS
 if settings.CORS_ORIGINS:
